@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Just Cinema</string>
+    <string name="upcoming">Próximos Estrenos</string>
+    <string name="top_rated">Tendencias</string>
+    <string name="suggestions">Recomendados para ti</string>
+    <string name="first_filter">Lanzado en 1983</string>
+    <string name="second_filter">Idioma</string>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/movieHomeFragment">
+
+    <fragment
+        android:id="@+id/movieHomeFragment"
+        android:name="com.antares.justcinema.ui.fragments.MovieHomeFragment"
+        android:label="MovieHomeFragment" >
+        <action
+            android:id="@+id/action_movieHomeFragment_to_movieDetailsFragment"
+            app:destination="@id/movieDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieDetailsFragment"
+        android:name="com.antares.justcinema.ui.fragments.MovieDetailsFragment"
+        android:label="MovieDetailsFragment" >
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+    </fragment>
+</navigation>
