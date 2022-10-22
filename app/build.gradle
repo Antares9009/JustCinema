@@ -102,6 +102,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
 
+    //Swipe Refresh
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
     //Local Unit Tests
     implementation 'androidx.test:core:1.4.0'
     testImplementation 'junit:junit:4.13.2'

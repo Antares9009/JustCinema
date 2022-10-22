@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MovieDetailsFragment : Fragment() {
-    private lateinit var _binding: FragmentMovieDetailsBinding
+    private var _binding: FragmentMovieDetailsBinding? = null
     private val binding
         get() = _binding!!
     private val viewModel by viewModels<MovieViewModel> {defaultViewModelProviderFactory}
@@ -79,11 +79,11 @@ class MovieDetailsFragment : Fragment() {
         binding.apply {
             tvTitle.text = movie.title
             tvGenres.text = genres
-            btnYear.text = movie.release_date.take(4)
-            btnLanguage.text = movie.original_language.capitalize()
-            btnRate.text = movie.vote_average.roundToInt().toString()
+            btnYear.text = movie.releaseDate.take(4)
+            btnLanguage.text = movie.originalLanguage.capitalize()
+            btnRate.text = movie.voteAverage.roundToInt().toString()
             tvOverview.text = movie.overview
-            Glide.with(ivDetail.context).load(Constants.IMAGE_PATH_DETAILS.plus(movie.poster_path)).into(ivDetail)
+            Glide.with(ivDetail.context).load(Constants.IMAGE_PATH_DETAILS.plus(movie.posterPath)).into(ivDetail)
         }
     }
 
@@ -91,5 +91,9 @@ class MovieDetailsFragment : Fragment() {
         Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
 }

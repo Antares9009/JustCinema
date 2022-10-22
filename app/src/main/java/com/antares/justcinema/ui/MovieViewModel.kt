@@ -1,12 +1,12 @@
 package com.antares.justcinema.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.antares.justcinema.data.Movie
 import com.antares.justcinema.data.MovieResponse
+import com.antares.justcinema.di.IODispatcher
 import com.antares.justcinema.network.MovieException
 import com.antares.justcinema.network.MovieRepository
 import com.antares.justcinema.network.TopRatedException
@@ -14,13 +14,15 @@ import com.antares.justcinema.network.UpcomingException
 import com.antares.justcinema.util.Constants.GENERIC_ERROR
 import com.antares.justcinema.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val repository: MovieRepository,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _upcomingMovies : MutableLiveData<Resource<MovieResponse>> = MutableLiveData()
@@ -54,36 +56,32 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun getUpcomingMovies() = viewModelScope.launch(handlerException) {
+    fun getUpcomingMovies() = viewModelScope.launch(ioDispatcher + handlerException) {
         _upcomingMovies.postValue(Resource.Loading)
         _upcomingMovies.postValue(Resource.Success(repository.getUpcoming()))
     }
 
-    fun getTopRatedMovies() = viewModelScope.launch(handlerException) {
+    fun getTopRatedMovies() = viewModelScope.launch(ioDispatcher + handlerException) {
         _topRatedMovies.postValue(Resource.Loading)
         _topRatedMovies.postValue(Resource.Success(repository.getTopRated()))
     }
 
-    fun getSuggestedMovies() = viewModelScope.launch(handlerException) {
+    fun getSuggestedMovies() = viewModelScope.launch(ioDispatcher + handlerException) {
         _suggestedMovies.postValue(Resource.Loading)
         _suggestedMovies.postValue(Resource.Success(repository.getTopRated()))
-        Log.i("DetailsFragment",_suggestedMovies.value.toString())
-
     }
 
-    fun getMovie(movieId: Int) = viewModelScope.launch(handlerException) {
+    fun getMovie(movieId: Int) = viewModelScope.launch(ioDispatcher + handlerException) {
         _detailMovie.postValue(Resource.Loading)
         _detailMovie.postValue(Resource.Success(repository.getMovie(movieId)))
-        Log.i("DetailsFragment",_detailMovie.value.toString())
     }
 
     fun getMoviesFilter(filter: String = "hola"){
         var results: List<Movie>?
         viewModelScope.launch {
             results = repository.getTopRated().results.filter {
-                it.release_date == "1972-03-14"
+                it.releaseDate == "1972-03-14"
             }
-            Log.i("Filter",results.toString())
         }
     }
 

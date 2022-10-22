@@ -1,24 +1,17 @@
 package com.antares.justcinema.ui.fragments
 
 import android.os.Bundle
-import android.os.Message
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.antares.justcinema.data.MovieResponse
 import com.antares.justcinema.databinding.FragmentMovieHomeBinding
 import com.antares.justcinema.ui.MovieViewModel
-import com.antares.justcinema.ui.adapters.SuggestedAdapter
-import com.antares.justcinema.ui.adapters.TopRatedAdapter
-import com.antares.justcinema.ui.adapters.UpcomingAdapter
+import com.antares.justcinema.ui.adapters.MoviesAdapter
 import com.antares.justcinema.util.Constants.GENERIC_ERROR
 import com.antares.justcinema.util.Resource
 import com.google.android.material.chip.Chip
@@ -32,9 +25,9 @@ class MovieHomeFragment : Fragment() {
     private val binding
         get() = _binding!!
     private val viewModel by viewModels<MovieViewModel> { defaultViewModelProviderFactory  }
-    private val upcomingAdapter = UpcomingAdapter(mutableListOf())
-    private val topRatedAdapter = TopRatedAdapter(mutableListOf())
-    private val suggestedAdapter = SuggestedAdapter(mutableListOf())
+    private var upcomingAdapter = MoviesAdapter(mutableListOf())
+    private var topRatedAdapter = MoviesAdapter(mutableListOf())
+    private var suggestedAdapter = MoviesAdapter(mutableListOf())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +44,14 @@ class MovieHomeFragment : Fragment() {
         initViews()
         initClickListener()
         initObservers()
+        setupSwipe()
+    }
+
+    private fun setupSwipe() {
+        binding.swipe.setOnRefreshListener {
+            initViewModels()
+            binding.swipe.isRefreshing = false
+        }
     }
 
     private fun initViewModels(){
@@ -79,11 +80,8 @@ class MovieHomeFragment : Fragment() {
         binding.chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val chip = group.findViewById<Chip>(checkedIds[0])
 
-            Log.i("FilterChip",group.toString())
-            Log.i("FilterChip",checkedIds.toString())
-            Log.i("FilterChip",chip.toString())
-
         }
+
 
         binding.chip1.setOnClickListener {
         }
@@ -105,6 +103,7 @@ class MovieHomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false
             )
         }
+
     }
 
     private fun initObservers() {
@@ -160,7 +159,7 @@ class MovieHomeFragment : Fragment() {
     }
 
     private fun handleSuggestedResponse(result: MovieResponse?) {
-        suggestedAdapter.updateSuggestedList(result?.results ?: emptyList())
+        suggestedAdapter.updateMoviesList(result?.results ?: emptyList())
     }
 
     private fun handleSuggestedFailure(message: String?) {
@@ -168,7 +167,7 @@ class MovieHomeFragment : Fragment() {
     }
 
     private fun handleTopResponse(results: MovieResponse?) {
-        topRatedAdapter.updateTopRatedList(results?.results ?: emptyList())
+        topRatedAdapter.updateMoviesList(results?.results ?: emptyList())
     }
 
     private fun handleTopRatedFailure(message: String?) {
@@ -176,11 +175,15 @@ class MovieHomeFragment : Fragment() {
     }
 
     private fun handleUpcomingResponse(result: MovieResponse?) {
-        upcomingAdapter.updateUpcomingList(result?.results ?: emptyList())
+        upcomingAdapter.updateMoviesList(result?.results ?: emptyList())
     }
 
     private fun handleUpcomingFailure(message: String?) {
         Snackbar.make(binding.rvUpcoming, message ?: GENERIC_ERROR, Snackbar.LENGTH_SHORT).show()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

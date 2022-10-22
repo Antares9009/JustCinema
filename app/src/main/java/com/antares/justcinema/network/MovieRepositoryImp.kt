@@ -1,6 +1,5 @@
 package com.antares.justcinema.network
 
-import android.util.Log
 import com.antares.justcinema.data.Movie
 import com.antares.justcinema.data.MovieResponse
 import javax.inject.Inject
@@ -19,8 +18,6 @@ class MovieRepositoryImp @Inject constructor(
 
     override suspend fun getTopRated(): MovieResponse {
         return try {
-            Log.i("Details",api.getTopRated().toString())
-
             api.getTopRated()
         } catch (e: Exception){
             throw TopRatedException()
